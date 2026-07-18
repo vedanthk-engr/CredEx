@@ -1,44 +1,238 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* ===========================
+   CREDEX — BLACK + WHITE GLOW
+   Deploy-ready design system
+   =========================== */
+
 @layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
   body {
-    @apply bg-primary text-gray-100 font-sans min-h-screen selection:bg-accent selection:text-white;
-    background-image: 
-      radial-gradient(circle at 10% 20%, rgba(83, 74, 183, 0.08) 0%, transparent 40%),
-      radial-gradient(circle at 90% 80%, rgba(29, 158, 117, 0.06) 0%, transparent 40%);
-    background-attachment: fixed;
+    background-color: #000000;
+    color: #f5f5f5;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  ::selection {
+    background: rgba(255, 255, 255, 0.15);
+    color: #ffffff;
+  }
+
+  /* Custom scrollbars */
+  ::-webkit-scrollbar { width: 4px; height: 4px; }
+  ::-webkit-scrollbar-track { background: #0a0a0a; }
+  ::-webkit-scrollbar-thumb { background: #2a2a2a; border-radius: 99px; }
+  ::-webkit-scrollbar-thumb:hover { background: #3a3a3a; }
+}
+
+@layer components {
+
+  /* === GLASS PANEL — matte dark glass with white border === */
+  .glass-panel {
+    background: rgba(12, 12, 12, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 16px;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    box-shadow: 
+      0 0 0 1px rgba(255,255,255,0.04) inset,
+      0 4px 24px rgba(0,0,0,0.6);
+  }
+
+  /* === GLASS CARD — interactive hover state === */
+  .glass-card {
+    background: rgba(15, 15, 15, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 12px;
+    backdrop-filter: blur(8px);
+    transition: all 0.2s ease;
+  }
+  .glass-card:hover {
+    border-color: rgba(255, 255, 255, 0.18);
+    background: rgba(25, 25, 25, 0.9);
+    box-shadow: 0 0 20px rgba(255,255,255,0.04), 0 8px 32px rgba(0,0,0,0.5);
+    transform: translateY(-1px);
+  }
+
+  /* === GLOW WHITE — luminous text effect === */
+  .glow-white {
+    text-shadow: 
+      0 0 20px rgba(255,255,255,0.5),
+      0 0 40px rgba(255,255,255,0.2),
+      0 0 80px rgba(255,255,255,0.1);
+  }
+
+  /* === GLOW BORDER — white rim light effect === */
+  .glow-border {
+    box-shadow: 
+      0 0 0 1px rgba(255,255,255,0.12),
+      0 0 20px rgba(255,255,255,0.06),
+      inset 0 0 20px rgba(255,255,255,0.02);
+  }
+
+  /* === BTN PRIMARY — solid white with black text === */
+  .btn-primary {
+    background: #ffffff;
+    color: #000000;
+    font-weight: 700;
+    border-radius: 10px;
+    padding: 10px 20px;
+    font-size: 13px;
+    transition: all 0.2s ease;
+    box-shadow: 0 0 24px rgba(255,255,255,0.15), 0 2px 8px rgba(0,0,0,0.4);
+    border: none;
+    cursor: pointer;
+  }
+  .btn-primary:hover {
+    background: #f0f0f0;
+    box-shadow: 0 0 40px rgba(255,255,255,0.25), 0 4px 16px rgba(0,0,0,0.5);
+    transform: translateY(-1px);
+  }
+
+  /* === BTN SECONDARY — transparent with white border === */
+  .btn-secondary {
+    background: rgba(255,255,255,0.04);
+    color: #d4d4d4;
+    font-weight: 600;
+    border-radius: 10px;
+    padding: 10px 20px;
+    font-size: 13px;
+    transition: all 0.2s ease;
+    border: 1px solid rgba(255,255,255,0.1);
+    cursor: pointer;
+  }
+  .btn-secondary:hover {
+    background: rgba(255,255,255,0.08);
+    border-color: rgba(255,255,255,0.2);
+    color: #ffffff;
+    transform: translateY(-1px);
+  }
+
+  /* === STAT CARD === */
+  .stat-card {
+    background: rgba(10, 10, 10, 0.9);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 12px;
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+  }
+  .stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+  }
+
+  /* === NAV ITEM === */
+  .nav-item {
+    color: #737373;
+    font-size: 12px;
+    font-weight: 600;
+    transition: color 0.15s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    border: none;
+    background: none;
+  }
+  .nav-item:hover { color: #ffffff; background: rgba(255,255,255,0.04); }
+  .nav-item.active { color: #ffffff; background: rgba(255,255,255,0.06); }
+
+  /* === METRIC CHIP === */
+  .metric-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 8px;
+    border-radius: 99px;
+    font-size: 10px;
+    font-weight: 700;
+    border: 1px solid rgba(255,255,255,0.1);
+    background: rgba(255,255,255,0.05);
+    color: #a3a3a3;
+  }
+  .metric-chip.positive { color: #ffffff; border-color: rgba(255,255,255,0.2); background: rgba(255,255,255,0.08); }
+  .metric-chip.negative { color: #737373; border-color: rgba(255,255,255,0.06); }
+
+  /* === PROGRESS BAR === */
+  .progress-bar {
+    height: 3px;
+    border-radius: 99px;
+    background: rgba(255,255,255,0.06);
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    border-radius: 99px;
+    background: linear-gradient(90deg, rgba(255,255,255,0.4), rgba(255,255,255,0.9));
+    box-shadow: 0 0 8px rgba(255,255,255,0.4);
+    transition: width 1s cubic-bezier(0.4,0,0.2,1);
+  }
+
+  /* === DIVIDER === */
+  .divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.07), transparent);
+    margin: 16px 0;
+  }
+
+  /* === CODE BLOCK === */
+  .code-block {
+    background: #050505;
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 10px;
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    font-size: 11px;
+    line-height: 1.7;
+    color: #a3a3a3;
+    padding: 16px;
+    overflow: auto;
   }
 }
 
-/* Glassmorphism custom components */
-.glass-panel {
-  @apply bg-primary-light/50 border border-white/5 backdrop-blur-md rounded-2xl shadow-lg;
-}
+@layer utilities {
+  /* White glow text animation */
+  .text-glow {
+    animation: textGlow 3s ease-in-out infinite alternate;
+  }
 
-.glass-card {
-  @apply bg-white/5 border border-white/10 backdrop-blur-sm rounded-xl transition-all duration-300;
-}
+  @keyframes textGlow {
+    from { text-shadow: 0 0 10px rgba(255,255,255,0.3); }
+    to   { text-shadow: 0 0 30px rgba(255,255,255,0.6), 0 0 60px rgba(255,255,255,0.2); }
+  }
 
-.glass-card:hover {
-  @apply border-accent/30 bg-white/10 shadow-lg shadow-accent/5 -translate-y-0.5;
-}
+  /* Subtle float animation */
+  .float {
+    animation: float 6s ease-in-out infinite;
+  }
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
+  }
 
-/* Custom scrollbars */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-
-::-webkit-scrollbar-track {
-  @apply bg-primary-dark;
-}
-
-::-webkit-scrollbar-thumb {
-  @apply bg-gray-700 rounded;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  @apply bg-accent/70;
+  /* Shimmer sweep effect */
+  .shimmer {
+    background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.04) 50%, transparent 100%);
+    background-size: 200% 100%;
+    animation: shimmer 2s infinite;
+  }
+  @keyframes shimmer {
+    from { background-position: -200% 0; }
+    to   { background-position:  200% 0; }
+  }
 }

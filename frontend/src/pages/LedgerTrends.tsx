@@ -169,10 +169,10 @@ export const LedgerTrends: React.FC<LedgerTrendsProps> = ({ msmeId, onNavigate }
               <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.03)" />
               <XAxis dataKey="month" stroke="#6b7280" fontSize={10} tickLine={false} />
               <YAxis stroke="#6b7280" fontSize={10} tickLine={false} tickFormatter={(val) => `₹${val/1000}k`} />
-              <Tooltip formatter={(value) => formatINR(value as number)} contentStyle={{ background: '#132238', border: '1px solid rgba(255,255,255,0.05)', fontSize: 11 }} />
+              <Tooltip formatter={(value) => formatINR(value as number)} contentStyle={{ background: '#0A0A0A', border: '1px solid rgba(255,255,255,0.05)', fontSize: 11 }} />
               <Legend verticalAlign="top" height={36} iconType="circle" wrapperStyle={{ fontSize: 11 }} />
-              <Line type="monotone" dataKey="raw" stroke="#1d4ed8" strokeWidth={1.5} dot={{ r: 2 }} name="Raw GST Turnover" />
-              <Line type="monotone" dataKey="trend" stroke="#1D9E75" strokeWidth={2.5} dot={false} name="STL Trend Line" />
+              <Line type="monotone" dataKey="raw" stroke="#737373" strokeWidth={1.5} dot={{ r: 2 }} name="Raw GST Turnover" />
+              <Line type="monotone" dataKey="trend" stroke="#FFFFFF" strokeWidth={2.5} dot={false} name="STL Trend Line" />
             </LineChart>
           </ResponsiveContainer>
         </div>
@@ -191,13 +191,13 @@ export const LedgerTrends: React.FC<LedgerTrendsProps> = ({ msmeId, onNavigate }
                 <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.03)" />
                 <XAxis dataKey="month" stroke="#6b7280" fontSize={9} tickLine={false} />
                 <YAxis stroke="#6b7280" fontSize={9} tickLine={false} tickFormatter={(val) => `₹${val/1000}k`} />
-                <Tooltip formatter={(value) => formatINR(value as number)} contentStyle={{ background: '#132238', border: '1px solid rgba(255,255,255,0.05)', fontSize: 11 }} />
+                <Tooltip formatter={(value) => formatINR(value as number)} contentStyle={{ background: '#0A0A0A', border: '1px solid rgba(255,255,255,0.05)', fontSize: 11 }} />
                 <ReferenceLine y={0} stroke="rgba(255,255,255,0.1)" />
-                <Area type="monotone" dataKey="seasonal" stroke="#A78BFA" fill="url(#seasonalGrad)" name="Seasonality Amplitude" />
+                <Area type="monotone" dataKey="seasonal" stroke="#D4D4D4" fill="url(#seasonalGrad)" name="Seasonality Amplitude" />
                 <defs>
                   <linearGradient id="seasonalGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#A78BFA" stopOpacity={0.25}/>
-                    <stop offset="95%" stopColor="#A78BFA" stopOpacity={0}/>
+                    <stop offset="5%" stopColor="#D4D4D4" stopOpacity={0.25}/>
+                    <stop offset="95%" stopColor="#D4D4D4" stopOpacity={0}/>
                   </linearGradient>
                 </defs>
               </AreaChart>
@@ -217,12 +217,12 @@ export const LedgerTrends: React.FC<LedgerTrendsProps> = ({ msmeId, onNavigate }
                 <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.03)" />
                 <XAxis dataKey="month" stroke="#6b7280" fontSize={9} tickLine={false} />
                 <YAxis stroke="#6b7280" fontSize={9} tickLine={false} tickFormatter={(val) => `₹${val/1000}k`} />
-                <Tooltip formatter={(value) => formatINR(value as number)} contentStyle={{ background: '#132238', border: '1px solid rgba(255,255,255,0.05)', fontSize: 11 }} />
+                <Tooltip formatter={(value) => formatINR(value as number)} contentStyle={{ background: '#0A0A0A', border: '1px solid rgba(255,255,255,0.05)', fontSize: 11 }} />
                 <ReferenceLine y={0} stroke="rgba(255,255,255,0.15)" />
                 <Bar dataKey="residual" name="Residual Variance">
                   {stlData.map((entry, index) => {
                     const isNeg = entry.residual < 0;
-                    return <Cell key={`cell-${index}`} fill={isNeg ? '#D85A30' : '#1D9E75'} fillOpacity={0.7} />;
+                    return <Cell key={`cell-${index}`} fill={isNeg ? '#404040' : '#FFFFFF'} fillOpacity={0.7} />;
                   })}
                 </Bar>
               </BarChart>

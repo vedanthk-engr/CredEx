@@ -1,6 +1,7 @@
 import json
 import asyncio
 import datetime
+import numpy as np
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import StreamingResponse
 from sqlalchemy.ext.asyncio import AsyncSession

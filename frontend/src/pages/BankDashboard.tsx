@@ -84,9 +84,9 @@ export const BankDashboard: React.FC<BankDashboardProps> = ({ onInspect, onNavig
     });
 
     const riskData = [
-      { name: 'Low Risk', value: low, color: '#1D9E75' },
-      { name: 'Medium Risk', value: med, color: '#BA7517' },
-      { name: 'High Risk', value: high, color: '#D85A30' }
+      { name: 'Low Risk', value: low, color: '#FFFFFF' },
+      { name: 'Medium Risk', value: med, color: '#A3A3A3' },
+      { name: 'High Risk', value: high, color: '#404040' }
     ];
 
     const sectorData = Object.entries(sectors).map(([name, count]) => ({
@@ -200,8 +200,8 @@ export const BankDashboard: React.FC<BankDashboardProps> = ({ onInspect, onNavig
                 <BarChart data={stats.sectorData} margin={{ bottom: 5 }}>
                   <XAxis dataKey="name" stroke="#6b7280" fontSize={9} tickLine={false} />
                   <YAxis stroke="#6b7280" fontSize={9} tickLine={false} />
-                  <Tooltip contentStyle={{ background: '#132238', border: '1px solid rgba(255,255,255,0.05)', fontSize: 11 }} />
-                  <Bar dataKey="count" fill="#534AB7" radius={[4, 4, 0, 0]} />
+                  <Tooltip contentStyle={{ background: '#0A0A0A', border: '1px solid rgba(255,255,255,0.05)', fontSize: 11 }} />
+                  <Bar dataKey="count" fill="#FFFFFF" radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </div>
@@ -243,11 +243,11 @@ export const BankDashboard: React.FC<BankDashboardProps> = ({ onInspect, onNavig
                 <XAxis type="number" dataKey="vintage" name="Vintage" unit=" yrs" stroke="#6b7280" fontSize={9} tickLine={false} />
                 <YAxis type="number" dataKey="percentile" name="Percentile" unit="%" stroke="#6b7280" fontSize={9} tickLine={false} />
                 <ZAxis type="number" dataKey="limit" range={[60, 400]} />
-                <Tooltip cursor={{ strokeDasharray: '3 3' }} contentStyle={{ background: '#132238', border: '1px solid rgba(255,255,255,0.05)', fontSize: 11 }} />
-                <Scatter name="MSMEs" data={stats.scatterData} fill="#1D9E75">
+                <Tooltip cursor={{ strokeDasharray: '3 3' }} contentStyle={{ background: '#0A0A0A', border: '1px solid rgba(255,255,255,0.05)', fontSize: 11 }} />
+                <Scatter name="MSMEs" data={stats.scatterData} fill="#FFFFFF">
                   {stats.scatterData.map((entry, index) => {
                     const isHighRisk = entry.percentile < 50;
-                    return <Cell key={`cell-${index}`} fill={isHighRisk ? '#D85A30' : '#1D9E75'} fillOpacity={0.85} />;
+                    return <Cell key={`cell-${index}`} fill={isHighRisk ? '#404040' : '#FFFFFF'} fillOpacity={0.85} />;
                   })}
                 </Scatter>
               </ScatterChart>

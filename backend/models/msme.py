@@ -27,6 +27,7 @@ class MSME(Base):
 
     # Ingested series & alternate data
     monthly_revenue_series = Column(String, nullable=True)
+    gst_filing_dates = Column(String, nullable=True)
     upi_inflow_series = Column(String, nullable=True)
     epfo_contribution_series = Column(String, nullable=True)
     electricity_consumption_series = Column(String, nullable=True)

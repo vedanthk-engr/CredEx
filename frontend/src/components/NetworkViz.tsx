@@ -92,7 +92,7 @@ export const NetworkViz: React.FC<NetworkVizProps> = ({
                 y1={p1.y}
                 x2={p2.x}
                 y2={p2.y}
-                stroke={isHighlighted ? 'rgba(99, 102, 241, 0.4)' : 'rgba(255, 255, 255, 0.08)'}
+                stroke={isHighlighted ? 'rgba(255, 255, 255, 0.5)' : 'rgba(255, 255, 255, 0.08)'}
                 strokeWidth={Math.min(5, Math.max(1, link.weight / 15000))}
                 strokeDasharray={idx % 2 === 0 ? '5,5' : undefined}
                 className="transition-all duration-300"

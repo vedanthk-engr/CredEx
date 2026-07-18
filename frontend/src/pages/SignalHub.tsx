@@ -205,12 +205,12 @@ export const SignalHub: React.FC<SignalHubProps> = ({ msmeId, onNavigate }) => {
                 <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.03)" />
                 <XAxis dataKey="month" stroke="#6b7280" fontSize={9} tickLine={false} />
                 <YAxis stroke="#6b7280" fontSize={9} tickLine={false} tickFormatter={(val) => `${val} kWh`} />
-                <Tooltip contentStyle={{ background: '#132238', border: '1px solid rgba(255,255,255,0.05)', fontSize: 11 }} />
-                <Area type="monotone" dataKey="kwh" stroke="#BA7517" fill="url(#elecGrad)" name="Monthly Draw (kWh)" />
+                <Tooltip contentStyle={{ background: '#0A0A0A', border: '1px solid rgba(255,255,255,0.05)', fontSize: 11 }} />
+                <Area type="monotone" dataKey="kwh" stroke="#FFFFFF" fill="url(#elecGrad)" name="Monthly Draw (kWh)" />
                 <defs>
                   <linearGradient id="elecGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#BA7517" stopOpacity={0.25}/>
-                    <stop offset="95%" stopColor="#BA7517" stopOpacity={0}/>
+                    <stop offset="5%" stopColor="#A3A3A3" stopOpacity={0.25}/>
+                    <stop offset="95%" stopColor="#A3A3A3" stopOpacity={0}/>
                   </linearGradient>
                 </defs>
               </AreaChart>
