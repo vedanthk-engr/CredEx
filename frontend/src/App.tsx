@@ -16,6 +16,7 @@ import {
   ClipboardList, Landmark, ArrowLeftRight, Menu, X, ChevronDown, 
   Check, ShieldCheck, Activity, LogOut
 } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 type Page = 'landing' | 'onboard' | 'dashboard' | 'ledger' | 'signals' | 'network' | 'voice' | 'roadmap' | 'market' | 'verifier' | 'developer' | 'bank';
 
@@ -302,9 +303,11 @@ export default function App() {
                 <div className="space-y-1">
                   <span className="text-[9px] font-bold text-neutral-500 uppercase tracking-widest block mb-2 px-2">Navigation</span>
                   {msmeNavItems.map((item) => (
-                    <button
+                    <motion.button
                       key={item.page}
                       onClick={() => navigateTo(item.page as Page)}
+                      whileHover={{ scale: 1.02, x: 2 }}
+                      whileTap={{ scale: 0.98 }}
                       className={`
                         w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-all group
                         ${currentPage === item.page ? 'bg-white text-black font-semibold' : 'text-neutral-400 hover:text-white hover:bg-white/[0.03]'}
@@ -319,7 +322,7 @@ export default function App() {
                           {item.desc}
                         </span>
                       </div>
-                    </button>
+                    </motion.button>
                   ))}
                 </div>
               )}
@@ -357,14 +360,34 @@ export default function App() {
 
           {/* 2. MAIN WORKSPACE CONTENT */}
           <main className="flex-grow min-w-0 p-4 sm:p-6 lg:p-8 mt-2">
-            {renderPage()}
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={currentPage + '_' + msmeId}
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -12 }}
+                transition={{ duration: 0.22, ease: "easeOut" }}
+              >
+                {renderPage()}
+              </motion.div>
+            </AnimatePresence>
           </main>
 
         </div>
       ) : (
         /* ── NON-WORKSPACE / FULL WIDTH LAYOUT (Landing & Onboarding) ── */
         <main className="flex-grow">
-          {renderPage()}
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={currentPage}
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -15 }}
+              transition={{ duration: 0.25, ease: "easeOut" }}
+            >
+              {renderPage()}
+            </motion.div>
+          </AnimatePresence>
         </main>
       )}
 

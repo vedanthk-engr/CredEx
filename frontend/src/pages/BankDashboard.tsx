@@ -3,7 +3,7 @@ import { bankApi } from '../lib/api';
 import type { PortfolioItem } from '../lib/types';
 import { PortfolioTable } from '../components/PortfolioTable';
 import { Loader2, Landmark, Download, RefreshCw, AlertCircle, PieChart as PieIcon, BarChart3, Settings, ShieldCheck } from 'lucide-react';
-import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, ScatterChart, Scatter, ZAxis } from 'recharts';
+import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, ScatterChart, Scatter, ZAxis, CartesianGrid } from 'recharts';
 
 interface BankDashboardProps {
   onInspect: (id: string) => void;
@@ -247,14 +247,31 @@ export const BankDashboard: React.FC<BankDashboardProps> = ({ onInspect, onNavig
             <div className="h-[200px] w-full">
               <ResponsiveContainer width="100%" height="100%">
                 <ScatterChart margin={{ top: 15, right: 15, bottom: 5, left: 5 }}>
-                  <XAxis type="number" dataKey="vintage" name="Vintage" unit=" yrs" stroke="#6b7280" fontSize={9} tickLine={false} />
-                  <YAxis type="number" dataKey="percentile" name="Percentile" unit="%" stroke="#6b7280" fontSize={9} tickLine={false} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" />
+                  <XAxis type="number" dataKey="vintage" name="Vintage" unit=" yrs" stroke="#404040" fontSize={8} tickLine={false} />
+                  <YAxis type="number" dataKey="percentile" name="Percentile" unit="%" stroke="#404040" fontSize={8} tickLine={false} />
                   <ZAxis type="number" dataKey="limit" range={[60, 400]} />
-                  <Tooltip cursor={{ strokeDasharray: '3 3' }} contentStyle={{ background: '#0A0A0A', border: '1px solid rgba(255,255,255,0.05)', fontSize: 11 }} />
+                  <Tooltip 
+                    cursor={{ strokeDasharray: '3 3', stroke: 'rgba(255,255,255,0.1)' }} 
+                    content={({ active, payload }: any) => {
+                      if (active && payload && payload.length) {
+                        const data = payload[0].payload;
+                        return (
+                          <div className="p-3 bg-black border border-white/10 rounded-xl shadow-[0_0_24px_rgba(255,255,255,0.06)] font-mono text-[10px] space-y-1">
+                            <p className="text-white font-extrabold">{data.name}</p>
+                            <p className="text-neutral-500 font-bold">Vintage: <span className="text-neutral-300">{data.vintage} yrs</span></p>
+                            <p className="text-neutral-500 font-bold">Rating: <span className="text-neutral-300">{data.percentile}%</span></p>
+                            <p className="text-neutral-500 font-bold">Exposure: <span className="text-white">{new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(data.limit)}</span></p>
+                          </div>
+                        );
+                      }
+                      return null;
+                    }}
+                  />
                   <Scatter name="MSMEs" data={stats.scatterData} fill="#FFFFFF">
                     {stats.scatterData.map((entry, index) => {
                       const isHighRisk = entry.percentile < 50;
-                      return <Cell key={`cell-${index}`} fill={isHighRisk ? '#404040' : '#FFFFFF'} fillOpacity={0.85} />;
+                      return <Cell key={`cell-${index}`} fill={isHighRisk ? '#262626' : '#FFFFFF'} fillOpacity={0.85} />;
                     })}
                   </Scatter>
                 </ScatterChart>

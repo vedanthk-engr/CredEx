@@ -202,17 +202,30 @@ export const SignalHub: React.FC<SignalHubProps> = ({ msmeId, onNavigate }) => {
           <div className="h-[180px] w-full">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={electricitySeries} margin={{ top: 10, right: 10, left: 10, bottom: 5 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.03)" />
-                <XAxis dataKey="month" stroke="#6b7280" fontSize={9} tickLine={false} />
-                <YAxis stroke="#6b7280" fontSize={9} tickLine={false} tickFormatter={(val) => `${val} kWh`} />
-                <Tooltip contentStyle={{ background: '#0A0A0A', border: '1px solid rgba(255,255,255,0.05)', fontSize: 11 }} />
-                <Area type="monotone" dataKey="kwh" stroke="#FFFFFF" fill="url(#elecGrad)" name="Monthly Draw (kWh)" />
                 <defs>
                   <linearGradient id="elecGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#A3A3A3" stopOpacity={0.25}/>
-                    <stop offset="95%" stopColor="#A3A3A3" stopOpacity={0}/>
+                    <stop offset="5%" stopColor="#FFFFFF" stopOpacity={0.15}/>
+                    <stop offset="95%" stopColor="#FFFFFF" stopOpacity={0}/>
                   </linearGradient>
                 </defs>
+                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" />
+                <XAxis dataKey="month" stroke="#404040" fontSize={8} tickLine={false} />
+                <YAxis stroke="#404040" fontSize={8} tickLine={false} tickFormatter={(val) => `${val} kWh`} />
+                <Tooltip content={({ active, payload, label }: any) => {
+                  if (active && payload && payload.length) {
+                    return (
+                      <div className="p-3 bg-black border border-white/10 rounded-xl shadow-[0_0_24px_rgba(255,255,255,0.06)] font-mono text-[10px] space-y-1">
+                        <p className="text-neutral-500 font-bold">{label}</p>
+                        <div className="flex justify-between gap-4">
+                          <span className="text-neutral-400 font-semibold">Draw:</span>
+                          <span className="text-white font-extrabold">{payload[0].value} kWh</span>
+                        </div>
+                      </div>
+                    );
+                  }
+                  return null;
+                }} />
+                <Area type="monotone" dataKey="kwh" stroke="#FFFFFF" strokeWidth={2} fill="url(#elecGrad)" name="Monthly Draw (kWh)" />
               </AreaChart>
             </ResponsiveContainer>
           </div>
