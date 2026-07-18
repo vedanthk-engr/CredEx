@@ -1,0 +1,44 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-primary text-gray-100 font-sans min-h-screen selection:bg-accent selection:text-white;
+    background-image: 
+      radial-gradient(circle at 10% 20%, rgba(83, 74, 183, 0.08) 0%, transparent 40%),
+      radial-gradient(circle at 90% 80%, rgba(29, 158, 117, 0.06) 0%, transparent 40%);
+    background-attachment: fixed;
+  }
+}
+
+/* Glassmorphism custom components */
+.glass-panel {
+  @apply bg-primary-light/50 border border-white/5 backdrop-blur-md rounded-2xl shadow-lg;
+}
+
+.glass-card {
+  @apply bg-white/5 border border-white/10 backdrop-blur-sm rounded-xl transition-all duration-300;
+}
+
+.glass-card:hover {
+  @apply border-accent/30 bg-white/10 shadow-lg shadow-accent/5 -translate-y-0.5;
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-primary-dark;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-gray-700 rounded;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-accent/70;
+}
