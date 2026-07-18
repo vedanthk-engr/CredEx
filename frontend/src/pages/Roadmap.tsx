@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { roadmapApi, scoringApi } from '../lib/api';
 import { RoadmapCard } from '../components/RoadmapCard';
 import type { RoadmapData } from '../lib/types';
@@ -15,6 +15,20 @@ export const Roadmap: React.FC<RoadmapProps> = ({ msmeId, onNavigate }) => {
   const [completingId, setCompletingId] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [recomputing, setRecomputing] = useState(false);
+
+  // Simulator state variables
+  const [simRunway, setSimRunway] = useState(15);
+  const [simGst, setSimGst] = useState(85);
+  const [simEpfo, setSimEpfo] = useState(80);
+
+  const simulatedScore = useMemo(() => {
+    return Math.min(99, Math.round(42 + (simRunway / 60) * 18 + (simGst / 100) * 22 + (simEpfo / 100) * 16));
+  }, [simRunway, simGst, simEpfo]);
+
+  const simulatedLimit = useMemo(() => {
+    return Math.round(320000 * (simulatedScore / 45));
+  }, [simulatedScore]);
+
 
   const fetchRoadmap = useCallback(async () => {
     setLoading(true);
@@ -156,46 +170,78 @@ export const Roadmap: React.FC<RoadmapProps> = ({ msmeId, onNavigate }) => {
             ))}
           </div>
 
-          {/* Right sidebar - Projected Score Delta */}
+          {/* Right sidebar - Interactive Credit limit Simulator */}
           <div className="lg:col-span-1 space-y-4">
-            <div className="p-5 rounded-2xl border border-white/5 bg-primary-dark/30 backdrop-blur-md">
-              <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4 pb-2 border-b border-white/5">
-                Projected Rating Uplift
+            <div className="p-5 rounded-2xl border border-white/5 bg-primary-dark/30 backdrop-blur-md space-y-4">
+              <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider pb-2 border-b border-white/5">
+                Eligible Limit Simulator
               </h3>
 
-              <div className="space-y-4">
+              {/* Slider 1: Cash Buffer Days */}
+              <div className="space-y-1">
+                <div className="flex justify-between text-[10px] font-bold">
+                  <span className="text-gray-400">Cash Runway:</span>
+                  <span className="text-white font-mono">{simRunway} days</span>
+                </div>
+                <input
+                  type="range"
+                  min="5"
+                  max="60"
+                  value={simRunway}
+                  onChange={(e) => setSimRunway(parseInt(e.target.value))}
+                  className="w-full h-1 bg-primary-dark rounded-lg appearance-none cursor-pointer accent-accent"
+                />
+              </div>
+
+              {/* Slider 2: GST Timeliness */}
+              <div className="space-y-1">
+                <div className="flex justify-between text-[10px] font-bold">
+                  <span className="text-gray-400">GST Filings:</span>
+                  <span className="text-white font-mono">{simGst}% on-time</span>
+                </div>
+                <input
+                  type="range"
+                  min="30"
+                  max="100"
+                  value={simGst}
+                  onChange={(e) => setSimGst(parseInt(e.target.value))}
+                  className="w-full h-1 bg-primary-dark rounded-lg appearance-none cursor-pointer accent-accent"
+                />
+              </div>
+
+              {/* Slider 3: EPFO Compliance */}
+              <div className="space-y-1">
+                <div className="flex justify-between text-[10px] font-bold">
+                  <span className="text-gray-400">EPFO Regularity:</span>
+                  <span className="text-white font-mono">{simEpfo}%</span>
+                </div>
+                <input
+                  type="range"
+                  min="20"
+                  max="100"
+                  value={simEpfo}
+                  onChange={(e) => setSimEpfo(parseInt(e.target.value))}
+                  className="w-full h-1 bg-primary-dark rounded-lg appearance-none cursor-pointer accent-accent"
+                />
+              </div>
+
+              <div className="flex items-center justify-between p-3 rounded-xl bg-purple/10 border border-purple/20 mt-4">
                 <div>
-                  <span className="text-[10px] text-gray-500 font-semibold block uppercase">
-                    Committed to Improve status
+                  <span className="text-gray-400 text-[9px] font-bold block uppercase">
+                    Projected Limit Offer
                   </span>
-                  <div className="flex items-center gap-2 mt-1">
-                    {roadmap.committed_to_improve ? (
-                      <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-accent/15 border border-accent/25 text-accent-light text-xs font-bold uppercase tracking-wide">
-                        <Award size={14} className="animate-bounce" /> Active (2+ completed)
-                      </span>
-                    ) : (
-                      <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-white/5 text-gray-400 text-xs font-semibold">
-                        Inactive (Need 2 completed)
-                      </span>
-                    )}
-                  </div>
+                  <strong className="text-purple-light text-lg font-mono font-extrabold block mt-0.5">
+                    {new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(simulatedLimit)}
+                  </strong>
                 </div>
-
-                <div className="flex items-center justify-between p-3 rounded-xl bg-purple/10 border border-purple/20">
-                  <div>
-                    <span className="text-gray-400 text-[10px] font-semibold block uppercase">
-                      Cumulative Score Uplift
-                    </span>
-                    <strong className="text-purple-light text-lg font-display font-extrabold block mt-0.5">
-                      {roadmap.projected_percentile_uplift}
-                    </strong>
-                  </div>
-                  <Award size={28} className="text-purple-light/40" />
+                <div className="text-right">
+                  <span className="text-gray-500 text-[8px] font-bold uppercase block">
+                    Target Score
+                  </span>
+                  <span className="text-purple-light text-sm font-mono font-bold">
+                    {simulatedScore}%
+                  </span>
                 </div>
-
-                <p className="text-[11px] text-gray-400 leading-relaxed font-medium">
-                  Completing the designated checklist actions will automatically trigger a scoring model recheck, qualifying your profile for the projected limit increase.
-                </p>
               </div>
             </div>
 

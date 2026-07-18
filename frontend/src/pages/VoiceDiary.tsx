@@ -71,6 +71,16 @@ export const VoiceDiary: React.FC<VoiceDiaryProps> = ({ msmeId, onNavigate }) =>
         </button>
       </div>
 
+      <style>{`
+        @keyframes audioWave {
+          0%, 100% { height: 4px; }
+          50% { height: 28px; }
+        }
+        .audio-wave-bar {
+          animation: audioWave 1.2s ease-in-out infinite;
+        }
+      `}</style>
+
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left Column - Recording Panel */}
         <div className="lg:col-span-2 glass-panel p-6 space-y-6">
@@ -100,6 +110,21 @@ export const VoiceDiary: React.FC<VoiceDiaryProps> = ({ msmeId, onNavigate }) =>
               <div className="absolute inset-0 bg-accent/5 rounded-2xl animate-pulse pointer-events-none"></div>
             )}
             
+            {isRecording && (
+              <div className="flex items-end gap-1 h-8 mb-4 select-none">
+                {[...Array(14)].map((_, i) => (
+                  <div 
+                    key={i} 
+                    className="w-1 rounded bg-accent audio-wave-bar"
+                    style={{
+                      animationDelay: `${i * 0.08}s`,
+                      animationDuration: `${0.6 + Math.sin(i) * 0.4}s`
+                    }}
+                  />
+                ))}
+              </div>
+            )}
+
             {!isRecording ? (
               <button
                 onClick={startRecording}

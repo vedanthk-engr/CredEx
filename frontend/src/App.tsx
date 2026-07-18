@@ -6,9 +6,12 @@ import { Roadmap } from './pages/Roadmap';
 import { VoiceDiary } from './pages/VoiceDiary';
 import { NetworkGraph } from './pages/NetworkGraph';
 import { BankDashboard } from './pages/BankDashboard';
-import { Landmark, ArrowLeftRight, Building, Home, Network, MessageSquare, ClipboardList, HelpCircle } from 'lucide-react';
+import { LedgerTrends } from './pages/LedgerTrends';
+import { SignalHub } from './pages/SignalHub';
+import { Marketplace } from './pages/Marketplace';
+import { Landmark, ArrowLeftRight, Building, Home, Network, MessageSquare, ClipboardList, BarChart3, Sparkles } from 'lucide-react';
 
-type Page = 'landing' | 'onboard' | 'dashboard' | 'roadmap' | 'voice' | 'network' | 'bank';
+type Page = 'landing' | 'onboard' | 'dashboard' | 'ledger' | 'signals' | 'network' | 'voice' | 'roadmap' | 'market' | 'bank';
 
 export default function App() {
   const [currentPage, setCurrentPage] = useState<Page>('landing');
@@ -37,12 +40,18 @@ export default function App() {
         return <Onboarding onComplete={handleOnboardingComplete} />;
       case 'dashboard':
         return <Dashboard msmeId={msmeId || 'DEMO_01'} onNavigate={navigateTo} />;
-      case 'roadmap':
-        return <Roadmap msmeId={msmeId || 'DEMO_04'} onNavigate={navigateTo} />;
-      case 'voice':
-        return <VoiceDiary msmeId={msmeId || 'DEMO_09'} onNavigate={navigateTo} />;
+      case 'ledger':
+        return <LedgerTrends msmeId={msmeId || 'DEMO_01'} onNavigate={navigateTo} />;
+      case 'signals':
+        return <SignalHub msmeId={msmeId || 'DEMO_01'} onNavigate={navigateTo} />;
       case 'network':
         return <NetworkGraph msmeId={msmeId || 'DEMO_01'} onNavigate={navigateTo} />;
+      case 'voice':
+        return <VoiceDiary msmeId={msmeId || 'DEMO_09'} onNavigate={navigateTo} />;
+      case 'roadmap':
+        return <Roadmap msmeId={msmeId || 'DEMO_04'} onNavigate={navigateTo} />;
+      case 'market':
+        return <Marketplace msmeId={msmeId || 'DEMO_01'} onNavigate={navigateTo} />;
       case 'bank':
         return <BankDashboard onInspect={handleInspectMsme} onNavigate={navigateTo} />;
       default:
@@ -69,12 +78,12 @@ export default function App() {
           </div>
 
           {/* Navigation Links */}
-          <nav className="hidden md:flex items-center gap-6 text-xs font-bold text-gray-400">
+          <nav className="hidden lg:flex items-center gap-5 text-xs font-bold text-gray-400">
             <button 
               onClick={() => navigateTo('landing')}
               className={`hover:text-white transition-colors flex items-center gap-1.5 ${currentPage === 'landing' ? 'text-white' : ''}`}
             >
-              <Home size={14} /> Home
+              <Home size={13} /> Home
             </button>
             
             {msmeId && (
@@ -83,25 +92,43 @@ export default function App() {
                   onClick={() => navigateTo('dashboard')}
                   className={`hover:text-white transition-colors flex items-center gap-1.5 ${currentPage === 'dashboard' ? 'text-white' : ''}`}
                 >
-                  <Building size={14} /> Dashboard
+                  <Building size={13} /> Overview
                 </button>
                 <button 
-                  onClick={() => navigateTo('roadmap')}
-                  className={`hover:text-white transition-colors flex items-center gap-1.5 ${currentPage === 'roadmap' ? 'text-white' : ''}`}
+                  onClick={() => navigateTo('ledger')}
+                  className={`hover:text-white transition-colors flex items-center gap-1.5 ${currentPage === 'ledger' ? 'text-white' : ''}`}
                 >
-                  <ClipboardList size={14} /> Roadmap
+                  <BarChart3 size={13} /> GST Trends
                 </button>
                 <button 
-                  onClick={() => navigateTo('voice')}
-                  className={`hover:text-white transition-colors flex items-center gap-1.5 ${currentPage === 'voice' ? 'text-white' : ''}`}
+                  onClick={() => navigateTo('signals')}
+                  className={`hover:text-white transition-colors flex items-center gap-1.5 ${currentPage === 'signals' ? 'text-white' : ''}`}
                 >
-                  <MessageSquare size={14} /> Voice Diary
+                  <Sparkles size={13} /> Signals
                 </button>
                 <button 
                   onClick={() => navigateTo('network')}
                   className={`hover:text-white transition-colors flex items-center gap-1.5 ${currentPage === 'network' ? 'text-white' : ''}`}
                 >
-                  <Network size={14} /> Network
+                  <Network size={13} /> Network
+                </button>
+                <button 
+                  onClick={() => navigateTo('voice')}
+                  className={`hover:text-white transition-colors flex items-center gap-1.5 ${currentPage === 'voice' ? 'text-white' : ''}`}
+                >
+                  <MessageSquare size={13} /> Voice Diary
+                </button>
+                <button 
+                  onClick={() => navigateTo('roadmap')}
+                  className={`hover:text-white transition-colors flex items-center gap-1.5 ${currentPage === 'roadmap' ? 'text-white' : ''}`}
+                >
+                  <ClipboardList size={13} /> Roadmap
+                </button>
+                <button 
+                  onClick={() => navigateTo('market')}
+                  className={`hover:text-white transition-colors flex items-center gap-1.5 ${currentPage === 'market' ? 'text-white' : ''}`}
+                >
+                  <Landmark size={13} /> OCEN Marketplace
                 </button>
               </>
             )}
