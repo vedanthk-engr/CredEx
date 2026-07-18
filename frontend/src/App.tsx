@@ -82,31 +82,27 @@ export default function App() {
             <button onClick={() => navigateTo('landing')} className={`nav-item ${currentPage === 'landing' ? 'active' : ''}`}>
               <Home size={13} /> Home
             </button>
-            {msmeId && (
-              <>
-                <button onClick={() => navigateTo('dashboard')} className={`nav-item ${currentPage === 'dashboard' ? 'active' : ''}`}>
-                  <Building size={13} /> Overview
-                </button>
-                <button onClick={() => navigateTo('ledger')} className={`nav-item ${currentPage === 'ledger' ? 'active' : ''}`}>
-                  <BarChart3 size={13} /> GST Trends
-                </button>
-                <button onClick={() => navigateTo('signals')} className={`nav-item ${currentPage === 'signals' ? 'active' : ''}`}>
-                  <Sparkles size={13} /> Signals
-                </button>
-                <button onClick={() => navigateTo('network')} className={`nav-item ${currentPage === 'network' ? 'active' : ''}`}>
-                  <Network size={13} /> Network
-                </button>
-                <button onClick={() => navigateTo('voice')} className={`nav-item ${currentPage === 'voice' ? 'active' : ''}`}>
-                  <MessageSquare size={13} /> Voice Diary
-                </button>
-                <button onClick={() => navigateTo('roadmap')} className={`nav-item ${currentPage === 'roadmap' ? 'active' : ''}`}>
-                  <ClipboardList size={13} /> Roadmap
-                </button>
-                <button onClick={() => navigateTo('market')} className={`nav-item ${currentPage === 'market' ? 'active' : ''}`}>
-                  <Landmark size={13} /> Marketplace
-                </button>
-              </>
-            )}
+            <button onClick={() => navigateTo('dashboard')} className={`nav-item ${currentPage === 'dashboard' ? 'active' : ''}`}>
+              <Building size={13} /> Overview
+            </button>
+            <button onClick={() => navigateTo('ledger')} className={`nav-item ${currentPage === 'ledger' ? 'active' : ''}`}>
+              <BarChart3 size={13} /> GST Trends
+            </button>
+            <button onClick={() => navigateTo('signals')} className={`nav-item ${currentPage === 'signals' ? 'active' : ''}`}>
+              <Sparkles size={13} /> Signals
+            </button>
+            <button onClick={() => navigateTo('network')} className={`nav-item ${currentPage === 'network' ? 'active' : ''}`}>
+              <Network size={13} /> Network
+            </button>
+            <button onClick={() => navigateTo('voice')} className={`nav-item ${currentPage === 'voice' ? 'active' : ''}`}>
+              <MessageSquare size={13} /> Voice Diary
+            </button>
+            <button onClick={() => navigateTo('roadmap')} className={`nav-item ${currentPage === 'roadmap' ? 'active' : ''}`}>
+              <ClipboardList size={13} /> Roadmap
+            </button>
+            <button onClick={() => navigateTo('market')} className={`nav-item ${currentPage === 'market' ? 'active' : ''}`}>
+              <Landmark size={13} /> Marketplace
+            </button>
           </nav>
 
           {/* Right Action buttons */}
