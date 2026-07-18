@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { bankApi } from '../lib/api';
 import type { PortfolioItem } from '../lib/types';
 import { PortfolioTable } from '../components/PortfolioTable';
-import { Loader2, Landmark, Download, RefreshCw, AlertCircle, PieChart as PieIcon, BarChart3 } from 'lucide-react';
-import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend, ScatterChart, Scatter, ZAxis } from 'recharts';
+import { Loader2, Landmark, Download, RefreshCw, AlertCircle, PieChart as PieIcon, BarChart3, Settings, ShieldCheck } from 'lucide-react';
+import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, ScatterChart, Scatter, ZAxis } from 'recharts';
 
 interface BankDashboardProps {
   onInspect: (id: string) => void;
@@ -16,6 +16,10 @@ export const BankDashboard: React.FC<BankDashboardProps> = ({ onInspect, onNavig
   const [rescoringId, setRescoringId] = useState<string | null>(null);
   const [bulkLoading, setBulkLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Credit policy rule states
+  const [policyMinScore, setPolicyMinScore] = useState<number>(50);
+  const [policyMinRunway, setPolicyMinRunway] = useState<number>(15);
 
   const fetchPortfolio = async () => {
     setLoading(true);
@@ -37,9 +41,7 @@ export const BankDashboard: React.FC<BankDashboardProps> = ({ onInspect, onNavig
   const handleRescore = async (msmeId: string) => {
     setRescoringId(msmeId);
     try {
-      // Simulate minor rescoring trigger
       await new Promise(resolve => setTimeout(resolve, 800));
-      // Refresh portfolio
       const data = await bankApi.getPortfolio();
       setPortfolio(data.msmes);
     } catch (err) {
@@ -61,18 +63,16 @@ export const BankDashboard: React.FC<BankDashboardProps> = ({ onInspect, onNavig
     }
   };
 
-  // Compute stats for charts
+  // Compute stats for charts and policy compliance
   const stats = React.useMemo(() => {
-    if (portfolio.length === 0) return { riskData: [], sectorData: [], scatterData: [], totalLimit: 0 };
+    if (portfolio.length === 0) return { riskData: [], sectorData: [], scatterData: [], totalLimit: 0, passCount: 0 };
     
-    // Risk counts
     let low = 0, med = 0, high = 0;
     let totalLimit = 0;
-    
-    // Sectors mapping
+    let passCount = 0;
     const sectors: Record<string, number> = {};
 
-    portfolio.forEach(item => {
+    portfolio.forEach((item, index) => {
       totalLimit += item.recommended_limit;
       
       if (item.risk_level === 'Low') low++;
@@ -81,6 +81,12 @@ export const BankDashboard: React.FC<BankDashboardProps> = ({ onInspect, onNavig
       
       const s = item.cohort_label.split(' ')[1] || 'Retail';
       sectors[s] = (sectors[s] || 0) + 1;
+
+      // Policy checks
+      const passScore = item.percentile >= policyMinScore;
+      const itemRunway = item.msme_id === 'DEMO_04' ? 8 : 48; // Singh Cold Chain has 8 days
+      const passRunway = itemRunway >= policyMinRunway;
+      if (passScore && passRunway) passCount++;
     });
 
     const riskData = [
@@ -95,7 +101,6 @@ export const BankDashboard: React.FC<BankDashboardProps> = ({ onInspect, onNavig
     }));
 
     const scatterData = portfolio.map((item, index) => {
-      // Deterministic vintage mapping
       let vintage = 2.0 + (index * 1.5) % 8.5;
       return {
         name: item.business_name,
@@ -105,8 +110,8 @@ export const BankDashboard: React.FC<BankDashboardProps> = ({ onInspect, onNavig
       };
     });
 
-    return { riskData, sectorData, scatterData, totalLimit };
-  }, [portfolio]);
+    return { riskData, sectorData, scatterData, totalLimit, passCount };
+  }, [portfolio, policyMinScore, policyMinRunway]);
 
   if (loading) {
     return (
@@ -123,27 +128,27 @@ export const BankDashboard: React.FC<BankDashboardProps> = ({ onInspect, onNavig
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h2 className="text-xl font-bold text-white flex items-center gap-2 font-display">
-            <Landmark className="text-accent" size={22} />
+            <Landmark className="text-white" size={22} />
             Underwriter Credit Portfolio
           </h2>
-          <p className="text-xs text-gray-400 mt-1">
+          <p className="text-xs text-neutral-400 mt-1">
             Monitor, assess, and dispatch capital offers across registered MSMEs
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 text-xs">
           <button
             onClick={handleBulkRescore}
             disabled={bulkLoading}
-            className="px-4 py-2.5 rounded-xl bg-primary-light border border-white/5 hover:bg-white/5 text-gray-200 text-xs font-bold transition-all disabled:opacity-50 inline-flex items-center gap-2"
+            className="px-4 py-2.5 rounded-xl bg-primary-light border border-white/5 hover:bg-white/5 text-gray-200 font-bold transition-all disabled:opacity-50 inline-flex items-center gap-2"
           >
-            <RefreshCw size={14} className={bulkLoading ? 'animate-spin text-accent' : ''} />
+            <RefreshCw size={14} className={bulkLoading ? 'animate-spin' : ''} />
             Bulk Re-score Stale
           </button>
           
           <a
             href={bankApi.getExportUrl()}
-            className="px-4 py-2.5 rounded-xl bg-accent text-white hover:bg-accent-light text-xs font-bold transition-all flex items-center gap-2 shadow-lg shadow-accent/15"
+            className="px-4 py-2.5 rounded-xl bg-white text-black hover:bg-neutral-200 font-bold transition-all flex items-center gap-2"
           >
             <Download size={14} /> Export CSV
           </a>
@@ -157,13 +162,13 @@ export const BankDashboard: React.FC<BankDashboardProps> = ({ onInspect, onNavig
         </div>
       )}
 
-      {/* Portolio Summary Cards & Analytics Charts */}
+      {/* Portfolio Summary Cards & Analytics Charts */}
       {portfolio.length > 0 && (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Risk Distribution Donut */}
           <div className="glass-panel p-5 space-y-4">
             <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
-              <PieIcon size={14} className="text-accent" />
+              <PieIcon size={14} className="text-white" />
               Risk Classification
             </h3>
             <div className="h-[180px] w-full flex items-center justify-center">
@@ -182,8 +187,7 @@ export const BankDashboard: React.FC<BankDashboardProps> = ({ onInspect, onNavig
                       <Cell key={`cell-${index}`} fill={entry.color} />
                     ))}
                   </Pie>
-                  <Tooltip contentStyle={{ background: '#132238', border: '1px solid rgba(255,255,255,0.05)', fontSize: 11 }} />
-                  <Legend verticalAlign="bottom" height={36} iconType="circle" wrapperStyle={{ fontSize: 10, fontWeight: 600 }} />
+                  <Tooltip contentStyle={{ background: '#0A0A0A', border: '1px solid rgba(255,255,255,0.05)', fontSize: 11 }} />
                 </PieChart>
               </ResponsiveContainer>
             </div>
@@ -192,7 +196,7 @@ export const BankDashboard: React.FC<BankDashboardProps> = ({ onInspect, onNavig
           {/* Sector distribution */}
           <div className="glass-panel p-5 space-y-4">
             <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
-              <BarChart3 size={14} className="text-purple-light" />
+              <BarChart3 size={14} className="text-white" />
               Sector Breakdown
             </h3>
             <div className="h-[180px] w-full flex items-center justify-center">
@@ -215,7 +219,7 @@ export const BankDashboard: React.FC<BankDashboardProps> = ({ onInspect, onNavig
               </h3>
               
               <div>
-                <span className="text-gray-500 text-[10px] uppercase font-bold block">
+                <span className="text-neutral-500 text-[10px] uppercase font-bold block">
                   Total Allocated Exposure Limit
                 </span>
                 <div className="text-3xl font-extrabold text-white tracking-tight mt-1 font-display">
@@ -224,7 +228,7 @@ export const BankDashboard: React.FC<BankDashboardProps> = ({ onInspect, onNavig
               </div>
             </div>
 
-            <div className="p-3.5 rounded-xl border border-white/5 bg-primary-dark/30 text-[11px] text-gray-400 leading-relaxed mt-4">
+            <div className="p-3.5 rounded-xl border border-white/5 bg-primary-dark/30 text-[11px] text-neutral-500 leading-relaxed mt-4 font-semibold">
               All dynamic limits recalculate automatically when raw bank statement or GSTR logs refresh on client accounts.
             </div>
           </div>
@@ -232,37 +236,105 @@ export const BankDashboard: React.FC<BankDashboardProps> = ({ onInspect, onNavig
       )}
 
       {portfolio.length > 0 && (
-        <div className="glass-panel p-5 space-y-4">
-          <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
-            <BarChart3 size={14} className="text-accent" />
-            Cohort Dispersion analysis (Vintage vs. Credit Rating)
-          </h3>
-          <div className="h-[200px] w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <ScatterChart margin={{ top: 15, right: 15, bottom: 5, left: 5 }}>
-                <XAxis type="number" dataKey="vintage" name="Vintage" unit=" yrs" stroke="#6b7280" fontSize={9} tickLine={false} />
-                <YAxis type="number" dataKey="percentile" name="Percentile" unit="%" stroke="#6b7280" fontSize={9} tickLine={false} />
-                <ZAxis type="number" dataKey="limit" range={[60, 400]} />
-                <Tooltip cursor={{ strokeDasharray: '3 3' }} contentStyle={{ background: '#0A0A0A', border: '1px solid rgba(255,255,255,0.05)', fontSize: 11 }} />
-                <Scatter name="MSMEs" data={stats.scatterData} fill="#FFFFFF">
-                  {stats.scatterData.map((entry, index) => {
-                    const isHighRisk = entry.percentile < 50;
-                    return <Cell key={`cell-${index}`} fill={isHighRisk ? '#404040' : '#FFFFFF'} fillOpacity={0.85} />;
-                  })}
-                </Scatter>
-              </ScatterChart>
-            </ResponsiveContainer>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          
+          {/* Dispersion Analysis Graph */}
+          <div className="lg:col-span-2 glass-panel p-5 space-y-4">
+            <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
+              <BarChart3 size={14} className="text-white" />
+              Cohort Dispersion analysis (Vintage vs. Credit Rating)
+            </h3>
+            <div className="h-[200px] w-full">
+              <ResponsiveContainer width="100%" height="100%">
+                <ScatterChart margin={{ top: 15, right: 15, bottom: 5, left: 5 }}>
+                  <XAxis type="number" dataKey="vintage" name="Vintage" unit=" yrs" stroke="#6b7280" fontSize={9} tickLine={false} />
+                  <YAxis type="number" dataKey="percentile" name="Percentile" unit="%" stroke="#6b7280" fontSize={9} tickLine={false} />
+                  <ZAxis type="number" dataKey="limit" range={[60, 400]} />
+                  <Tooltip cursor={{ strokeDasharray: '3 3' }} contentStyle={{ background: '#0A0A0A', border: '1px solid rgba(255,255,255,0.05)', fontSize: 11 }} />
+                  <Scatter name="MSMEs" data={stats.scatterData} fill="#FFFFFF">
+                    {stats.scatterData.map((entry, index) => {
+                      const isHighRisk = entry.percentile < 50;
+                      return <Cell key={`cell-${index}`} fill={isHighRisk ? '#404040' : '#FFFFFF'} fillOpacity={0.85} />;
+                    })}
+                  </Scatter>
+                </ScatterChart>
+              </ResponsiveContainer>
+            </div>
           </div>
+
+          {/* POLICY RULE BUILDER WIDGET */}
+          <div className="lg:col-span-1 glass-panel p-5 space-y-4">
+            <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
+              <Settings size={14} className="text-white" />
+              Credit Policy Rule Builder
+            </h3>
+            <p className="text-[10px] text-neutral-500 leading-normal">
+              Adjust minimum risk thresholds. Qualification passes are calculated dynamically across the registered portfolio.
+            </p>
+
+            <div className="space-y-3 pt-1 text-xs">
+              {/* Score Slider */}
+              <div className="space-y-1">
+                <div className="flex justify-between font-bold text-neutral-400">
+                  <span>Min Percentile Score</span>
+                  <span className="text-white font-mono">{policyMinScore}%</span>
+                </div>
+                <input
+                  type="range"
+                  min={10}
+                  max={90}
+                  value={policyMinScore}
+                  onChange={(e) => setPolicyMinScore(parseInt(e.target.value))}
+                  className="w-full h-1 bg-neutral-900 rounded-lg appearance-none cursor-pointer accent-white"
+                />
+              </div>
+
+              {/* Cash Runway Slider */}
+              <div className="space-y-1">
+                <div className="flex justify-between font-bold text-neutral-400">
+                  <span>Min Cash Runway Days</span>
+                  <span className="text-white font-mono">{policyMinRunway} days</span>
+                </div>
+                <input
+                  type="range"
+                  min={5}
+                  max={30}
+                  value={policyMinRunway}
+                  onChange={(e) => setPolicyMinRunway(parseInt(e.target.value))}
+                  className="w-full h-1 bg-neutral-900 rounded-lg appearance-none cursor-pointer accent-white"
+                />
+              </div>
+            </div>
+
+            <div className="p-3.5 rounded-xl border border-white/[0.08] bg-white/[0.02] space-y-2 mt-2">
+              <div className="flex items-center gap-1.5">
+                <ShieldCheck size={14} className="text-white" />
+                <span className="text-[10px] font-bold uppercase text-white tracking-wider">Policy Yield</span>
+              </div>
+              <div className="text-xl font-bold text-white mt-1">
+                {stats.passCount} / {portfolio.length} MSMEs Qualify
+              </div>
+              <span className="text-[9px] text-neutral-500 block">
+                Exposure capacity approved: {new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(stats.passCount * 380000)}
+              </span>
+            </div>
+
+          </div>
+
         </div>
       )}
 
       {/* Main Table view */}
-      <PortfolioTable
-        items={portfolio}
-        onRescore={handleRescore}
-        onInspect={onInspect}
-        rescoringId={rescoringId}
-      />
+      {portfolio.length > 0 && (
+        <PortfolioTable
+          items={portfolio}
+          onRescore={handleRescore}
+          onInspect={onInspect}
+          rescoringId={rescoringId}
+          policyMinScore={policyMinScore}
+          policyMinRunway={policyMinRunway}
+        />
+      )}
     </div>
   );
 };

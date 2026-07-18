@@ -26,6 +26,13 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
   const [aaLinked, setAaLinked] = useState(false);
   const [linkingAA, setLinkingAA] = useState(false);
   
+  // Interactive FIP / OTP simulator states
+  const [fipStep, setFipStep] = useState<'selection' | 'otp'>('selection');
+  const [selectedFips, setSelectedFips] = useState<string[]>(["sbi", "gstn"]);
+  const [mobileNum, setMobileNum] = useState("9876543210");
+  const [otpVal, setOtpVal] = useState("636023");
+  const [verifyingOtp, setVerifyingOtp] = useState(false);
+  
   // Optional Signals state
   const [whatsappActive, setWhatsappActive] = useState(false);
   const [ondcActive, setOndcActive] = useState(false);
@@ -236,62 +243,139 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
         </div>
       )}
 
-      {/* Step 2: Financial Ingestion */}
+      {/* Step 2: Financial Ingestion (Interactive Account Aggregator Simulator) */}
       {step === 2 && (
         <div className="glass-panel p-6 space-y-6">
           <div>
             <h3 className="text-lg font-bold text-white flex items-center gap-2 font-display">
-              <UploadCloud size={20} className="text-accent" />
-              Connect Financial Ledgers
+              <UploadCloud size={20} className="text-white" />
+              Consent via Account Aggregator
             </h3>
-            <p className="text-xs text-gray-400 mt-1">
-              Link primary trade bank channels using automated Account Aggregator
+            <p className="text-xs text-neutral-400 mt-1">
+              Select Financial Information Providers (FIPs) and request OTP authorization
             </p>
           </div>
 
-          <div className="p-5 rounded-2xl border border-accent/20 bg-accent/5 text-center">
-            <h4 className="text-sm font-bold text-accent-light flex items-center justify-center gap-2">
-              <Link size={16} />
-              Consent via Account Aggregator (Recommended)
-            </h4>
-            <p className="text-xs text-gray-300 leading-relaxed mt-2 max-w-sm mx-auto">
-              Safely pulls 24 months of GSTR-1 filings, GSTIN turnover registers, and primary bank statements instantly.
-            </p>
+          {fipStep === 'selection' ? (
+            <div className="space-y-4 text-xs">
+              
+              {/* Grid of FIP options */}
+              <div className="space-y-2">
+                <span className="text-[10px] font-bold text-neutral-500 uppercase tracking-wider block">
+                  Select Registries to Link
+                </span>
+                
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 font-semibold">
+                  {[
+                    { id: "sbi", name: "State Bank of India (SBI)", desc: "Primary Trade Cash Flow" },
+                    { id: "hdfc", name: "HDFC Bank Ltd", desc: "Secondary Accounts" },
+                    { id: "icici", name: "ICICI Bank Ltd", desc: "Corporate Ledger" },
+                    { id: "gstn", name: "GSTN Tax Registry", desc: "GSTR-1 & GSTR-3B filings" },
+                    { id: "epfo", name: "EPFO Payroll Registry", desc: "Provident Fund / Headcount" }
+                  ].map((fip) => {
+                    const active = selectedFips.includes(fip.id);
+                    return (
+                      <button
+                        key={fip.id}
+                        type="button"
+                        onClick={() => {
+                          setSelectedFips(prev => 
+                            active ? prev.filter(x => x !== fip.id) : [...prev, fip.id]
+                          );
+                        }}
+                        className={`p-3 rounded-xl border text-left transition-colors flex flex-col ${active ? 'bg-white/[0.04] border-white/30 text-white' : 'bg-transparent border-white/[0.08] text-neutral-400'}`}
+                      >
+                        <span className="text-xs font-bold block">{fip.name}</span>
+                        <span className="text-[9px] text-neutral-500 block mt-0.5">{fip.desc}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
 
-            <button
-              onClick={handleLinkAA}
-              disabled={linkingAA}
-              className="mt-4 px-6 py-2.5 rounded-xl bg-accent text-white font-bold hover:bg-accent-light transition-all shadow-md shadow-accent/10 disabled:opacity-50 inline-flex items-center gap-2 text-xs"
-            >
-              {linkingAA ? 'Connecting to AA Gateway...' : 'Link via Account Aggregator'}
-            </button>
-          </div>
+              {/* Mobile Input */}
+              <div className="space-y-1 pt-1">
+                <label className="block text-neutral-400 font-bold">Aggregator Mobile Number</label>
+                <input
+                  type="text"
+                  value={mobileNum}
+                  onChange={(e) => setMobileNum(e.target.value)}
+                  className="w-full bg-[#0c0c0c] border border-white/[0.08] rounded-xl py-2.5 px-4 text-gray-100 placeholder-neutral-500 focus:outline-none focus:border-white/30"
+                  placeholder="e.g. 9876543210"
+                />
+              </div>
 
-          <div className="relative flex py-2 items-center justify-center select-none text-[10px] text-gray-500 uppercase font-bold">
-            <div className="flex-grow border-t border-white/5"></div>
-            <span className="flex-shrink mx-4">Or manually upload statements</span>
-            <div className="flex-grow border-t border-white/5"></div>
-          </div>
+              <button
+                type="button"
+                disabled={selectedFips.length === 0 || !mobileNum}
+                onClick={() => setFipStep('otp')}
+                className="w-full btn-primary disabled:opacity-50 mt-2"
+              >
+                Request OTP from Aggregator Gateway
+              </button>
 
-          <div className="space-y-3 text-xs font-semibold">
-            <div>
-              <label className="block text-gray-400 mb-1">GSTR-3B filings / GST Ledger (PDF / JSON)</label>
-              <input type="file" className="block w-full text-xs text-gray-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-primary-light file:text-gray-300 hover:file:bg-white/5 cursor-pointer" />
             </div>
-            
-            <div>
-              <label className="block text-gray-400 mb-1">Bank Statement (CSV / PDF)</label>
-              <input type="file" className="block w-full text-xs text-gray-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-primary-light file:text-gray-300 hover:file:bg-white/5 cursor-pointer" />
+          ) : (
+            <div className="space-y-4 text-xs">
+              
+              <div className="p-4 rounded-xl border border-white/[0.08] bg-white/[0.02] text-center space-y-2">
+                <span className="text-[10px] font-bold text-neutral-400 uppercase block">OTP Verification SMS Sent</span>
+                <p className="text-[11px] text-neutral-500">
+                  A verification token has been routed to <strong>+91 {mobileNum}</strong> via your connected FIP nodes.
+                </p>
+              </div>
+
+              <div className="space-y-1">
+                <label className="block text-neutral-400 font-bold">Enter OTP Token</label>
+                <input
+                  type="text"
+                  value={otpVal}
+                  onChange={(e) => setOtpVal(e.target.value)}
+                  className="w-full bg-[#0c0c0c] border border-white/[0.08] rounded-xl py-2.5 px-4 text-gray-100 placeholder-neutral-500 focus:outline-none focus:border-white/30 font-mono text-center tracking-widest text-sm"
+                  placeholder="e.g. 636023"
+                />
+              </div>
+
+              <div className="flex gap-3 mt-4">
+                <button
+                  type="button"
+                  onClick={() => setFipStep('selection')}
+                  className="w-1/3 btn-secondary"
+                >
+                  Change FIPs
+                </button>
+                <button
+                  type="button"
+                  disabled={verifyingOtp || !otpVal}
+                  onClick={async () => {
+                    setVerifyingOtp(true);
+                    try {
+                      if (msmeId) {
+                        await onboardingApi.grantAAConsent(msmeId, true);
+                        setAaLinked(true);
+                        setStep(3);
+                      }
+                    } catch (e) {
+                      alert("Consent verification failed.");
+                    } finally {
+                      setVerifyingOtp(false);
+                    }
+                  }}
+                  className="w-2/3 btn-primary disabled:opacity-50"
+                >
+                  {verifyingOtp ? 'Verifying Consent Certificate...' : 'Verify & Sign Certificate'}
+                </button>
+              </div>
+
             </div>
-          </div>
+          )}
 
           <div className="flex items-center justify-between pt-4 border-t border-white/5 text-xs font-bold">
             <button onClick={() => setStep(1)} className="flex items-center gap-1 text-gray-400 hover:text-white">
               <ArrowLeft size={16} /> Back
             </button>
-            
             <button onClick={() => setStep(3)} className="flex items-center gap-1 text-gray-400 hover:text-white">
-              Skip Manual <ArrowRight size={16} />
+              Skip Integration <ArrowRight size={16} />
             </button>
           </div>
         </div>

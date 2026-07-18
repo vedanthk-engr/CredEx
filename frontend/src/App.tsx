@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Landing } from './pages/Landing';
 import { Onboarding } from './pages/Onboarding';
 import { Dashboard } from './pages/Dashboard';
@@ -9,14 +9,15 @@ import { BankDashboard } from './pages/BankDashboard';
 import { LedgerTrends } from './pages/LedgerTrends';
 import { SignalHub } from './pages/SignalHub';
 import { Marketplace } from './pages/Marketplace';
+import { ZkVerifier } from './pages/ZkVerifier';
+import { DevConsole } from './pages/DevConsole';
 import { 
   Building, Home, BarChart3, Sparkles, Network, MessageSquare, 
   ClipboardList, Landmark, ArrowLeftRight, Menu, X, ChevronDown, 
-  Check, Copy, ShieldCheck, Activity, Briefcase, MapPin, 
-  ChevronRight, Award, RefreshCw, LogOut, ChevronLeft
+  Check, ShieldCheck, Activity, LogOut
 } from 'lucide-react';
 
-type Page = 'landing' | 'onboard' | 'dashboard' | 'ledger' | 'signals' | 'network' | 'voice' | 'roadmap' | 'market' | 'bank';
+type Page = 'landing' | 'onboard' | 'dashboard' | 'ledger' | 'signals' | 'network' | 'voice' | 'roadmap' | 'market' | 'verifier' | 'developer' | 'bank';
 
 export const DEMO_PROFILES = [
   { id: 'DEMO_01', name: "Priya's Fresh Kitchen", sector: "Food Services & QSR", tier: "Tier 2", location: "Coimbatore, TN", score: 72, risk: "Low", connections: ["GST", "UPI", "EPFO", "WhatsApp"] },
@@ -82,6 +83,10 @@ export default function App() {
         return <Roadmap msmeId={msmeId} onNavigate={(p) => navigateTo(p as Page)} />;
       case 'market':
         return <Marketplace msmeId={msmeId} onNavigate={(p) => navigateTo(p as Page)} />;
+      case 'verifier':
+        return <ZkVerifier msmeId={msmeId} onNavigate={(p) => navigateTo(p as Page)} />;
+      case 'developer':
+        return <DevConsole msmeId={msmeId} onNavigate={(p) => navigateTo(p as Page)} />;
       case 'bank':
         return <BankDashboard onInspect={handleInspectMsme} onNavigate={(p) => navigateTo(p as Page)} />;
       default:
@@ -90,7 +95,7 @@ export default function App() {
   };
 
   // Determine if we should show the Workspace layout
-  const isWorkspace = ['dashboard', 'ledger', 'signals', 'network', 'voice', 'roadmap', 'market', 'bank'].includes(currentPage);
+  const isWorkspace = ['dashboard', 'ledger', 'signals', 'network', 'voice', 'roadmap', 'market', 'verifier', 'developer', 'bank'].includes(currentPage);
   const isBankView = currentPage === 'bank';
 
   // Navigation Links for MSME Workspace
@@ -102,6 +107,8 @@ export default function App() {
     { page: 'voice', label: 'Voice Diary', desc: 'Weekly speech check-in', icon: <MessageSquare size={16} /> },
     { page: 'roadmap', label: 'Roadmap & Simulator', desc: 'Metric limits calculator', icon: <ClipboardList size={16} /> },
     { page: 'market', label: 'Marketplace', desc: 'OCEN dynamic loan bids', icon: <Landmark size={16} /> },
+    { page: 'verifier', label: 'ZK Verifier', desc: 'Validate attestation claims', icon: <ShieldCheck size={16} /> },
+    { page: 'developer', label: 'Dev Console', desc: 'Telemetry & genetic drift', icon: <Activity size={16} /> },
   ];
 
   return (
